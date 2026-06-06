@@ -16,23 +16,32 @@ export default function Homepage() {
         <img
           src={cover}
           alt="Hero"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/30" />
 
-        <div className="absolute inset-0 flex items-center justify-end pr-48">
+        <div className="absolute inset-0 flex items-center justify-center px-6 sm:px-10 md:justify-end md:pr-24 lg:pr-48">
           <h1
-            className="text-6xl font-extrabold leading-tight max-w-lg text-right [&>br]:leading-none"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight w-full max-w-sm sm:max-w-md md:max-w-lg text-center md:text-right [&>br]:leading-none"
             style={{ fontFamily: 'Inter, sans-serif', color: '#def930', ...slideFromRight('0s') }}
           >
             LOREM IPSUM DOLOR SIT AMET CONSECTETUR
             <br />
-            <span style={{ color: '#ffffff', fontFamily: 'Inter, sans-serif', fontSize: '20px', fontWeight: 200, lineHeight: '1.4', display: 'block', marginTop: '8px', ...slideFromRight('0.2s') }}>
+            <span style={{
+              color: '#ffffff',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 'clamp(14px, 2vw, 20px)',
+              fontWeight: 200,
+              lineHeight: '1.4',
+              display: 'block',
+              marginTop: '8px',
+              ...slideFromRight('0.2s')
+            }}>
               Vitae posuere integer nisl gravida quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat 
               Duis aute irure dolor in
             </span>
 
-            <span style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+            <span className="flex flex-col sm:flex-row justify-center md:justify-end gap-3 mt-6">
               <button
                 className="btn-primary"
                 style={{ fontFamily: 'Inter, sans-serif', backgroundColor: '#11ae23', color: '#ffffff', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', border: 'none', ...fadeIn('0.5s') }}
