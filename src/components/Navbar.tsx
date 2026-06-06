@@ -39,13 +39,13 @@ export default function Navbar() {
             />
           </Link>
 
-          <ul className="flex h-20">
+          <ul className="flex h-20" style={{ fontFamily: 'Inter, sans-serif' }}>
             {navLinks.map(({ label, to }) => (
               <li key={to} className="flex">
                 <NavLink
                   to={to}
                   className={({ isActive }) =>
-                    `flex items-center px-4 text-sm font-medium border-b-4 transition-colors cursor-pointer
+                    `flex items-center px-4 text-sm font-bold border-b-4 transition-colors cursor-pointer
                     ${isActive
                       ? 'text-gray-900 border-gray-900'
                       : 'text-gray-500 border-transparent hover:text-gray-900'
@@ -60,7 +60,7 @@ export default function Navbar() {
         </div>
 
         <button
-          className="relative px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer overflow-hidden"
+          className="btn-primary relative px-6 py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer overflow-hidden"
           style={{
             backgroundColor: '#11ae23',
             backgroundImage: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)',
