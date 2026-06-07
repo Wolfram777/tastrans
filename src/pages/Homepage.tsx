@@ -181,7 +181,7 @@ export default function Homepage() {
               <img
                 src={pic1}
                 alt="Tas Trans"
-                className="w-full h-[600px] object-cover"
+                className="w-full h-64 sm:h-80 md:h-[500px] lg:h-[600px] object-cover"
               />
             </div>
           </div>

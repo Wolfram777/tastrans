@@ -64,15 +64,15 @@ export default function BookingCard() {
   const [passengers, setPassengers] = useState('')
 
   return (
-    <div className="relative z-20 mx-auto w-11/12 max-w-5xl -mt-20 rounded-3xl bg-white shadow-2xl border border-gray-100 px-8 pt-6 pb-8">
+    <div className="relative z-20 mx-auto w-11/12 max-w-5xl -mt-10 sm:-mt-16 md:-mt-20 rounded-3xl bg-white shadow-2xl border border-gray-100 px-4 sm:px-6 md:px-8 pt-5 pb-6 md:pb-8">
 
       {/* Trip type tabs */}
-      <div className="inline-flex bg-gray-100 rounded-xl p-1 gap-1 mb-6">
+      <div className="flex bg-gray-100 rounded-xl p-1 gap-1 mb-5 w-full sm:w-auto">
         {tabs.map(({ value, label, icon }) => (
           <button
             key={value}
             onClick={() => setTripType(value)}
-            className="relative flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer"
+            className="relative flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer"
             style={{
               fontFamily: 'Inter, sans-serif',
               backgroundColor: tripType === value ? '#ffffff' : 'transparent',
@@ -87,7 +87,7 @@ export default function BookingCard() {
       </div>
 
       {/* Form fields */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-end">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-3 items-end">
 
         <FieldWrapper label="From">
           <CustomSelect
@@ -117,17 +117,18 @@ export default function BookingCard() {
           />
         </FieldWrapper>
 
-        {tripType === 'round-trip' && (
+        <div style={{ flex: 1, minWidth: 0, opacity: tripType === 'round-trip' ? 1 : 0.4, transition: 'opacity 0.2s ease' }}>
           <FieldWrapper label="Return">
             <input
               type="date"
               value={returnDate}
               onChange={e => setReturnDate(e.target.value)}
+              disabled={tripType !== 'round-trip'}
               className={dateInputClass}
-              style={{ fontFamily: 'Inter, sans-serif', color: '#374151' }}
+              style={{ fontFamily: 'Inter, sans-serif', color: '#374151', cursor: tripType === 'round-trip' ? 'pointer' : 'not-allowed', backgroundColor: tripType === 'round-trip' ? '#ffffff' : '#f3f4f6' }}
             />
           </FieldWrapper>
-        )}
+        </div>
 
         <FieldWrapper label="Passengers">
           <CustomSelect
@@ -140,7 +141,7 @@ export default function BookingCard() {
 
         {/* Search button */}
         <button
-          className="btn-primary h-11 px-7 rounded-xl text-sm font-bold text-white cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center gap-2"
+          className="btn-primary col-span-2 sm:col-span-3 lg:col-span-1 h-11 px-7 rounded-xl text-sm font-bold text-white cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center justify-center gap-2 w-full lg:w-auto"
           style={{
             fontFamily: 'Inter, sans-serif',
             backgroundColor: '#11ae23',
