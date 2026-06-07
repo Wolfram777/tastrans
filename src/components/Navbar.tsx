@@ -65,9 +65,7 @@ export default function Navbar() {
           className="btn-primary relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-semibold text-white cursor-pointer overflow-hidden"
           style={{
             backgroundColor: '#11ae23',
-            backgroundImage: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)',
-            backgroundSize: '200% 100%',
-            animation: 'shimmer 4s infinite linear',
+            animation: 'scalePulse 2s ease-in-out infinite',
           }}
         >
           Book Now
