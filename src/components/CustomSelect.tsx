@@ -1,25 +1,39 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 
 interface CustomSelectProps {
   options: string[]
   value: string
   onChange: (val: string) => void
   placeholder: string
+  minimal?: boolean
 }
 
-export default function CustomSelect({ options, value, onChange, placeholder }: CustomSelectProps) {
+export default function CustomSelect({ options, value, onChange, placeholder, minimal = false }: CustomSelectProps) {
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
   const ref = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false)
+        setSearch('')
       }
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [])
+
+  useEffect(() => {
+    if (open) setTimeout(() => searchRef.current?.focus(), 50)
+    else setSearch('')
+  }, [open])
+
+  const filtered = useMemo(
+    () => options.filter(o => o.toLowerCase().includes(search.toLowerCase())),
+    [options, search]
+  )
 
   return (
     <div ref={ref} className="relative w-full">
@@ -27,12 +41,16 @@ export default function CustomSelect({ options, value, onChange, placeholder }: 
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full h-11 px-3 rounded-xl border border-gray-200 bg-white text-sm text-left flex items-center justify-between gap-2 transition-all duration-150 cursor-pointer focus:outline-none"
+        className={`w-full text-sm text-left flex items-center justify-between gap-1 cursor-pointer focus:outline-none overflow-hidden whitespace-nowrap transition-all duration-150
+          ${minimal
+            ? 'bg-transparent border-none p-0'
+            : 'h-11 px-3 rounded-xl border border-gray-200 bg-white gap-2'
+          }`}
         style={{
           fontFamily: 'Inter, sans-serif',
           color: value ? '#374151' : '#9ca3af',
-          boxShadow: open ? '0 0 0 2px #11ae23' : undefined,
-          borderColor: open ? '#11ae23' : undefined,
+          boxShadow: !minimal && open ? '0 0 0 2px #11ae23' : undefined,
+          borderColor: !minimal && open ? '#11ae23' : undefined,
         }}
       >
         <span className="truncate">{value || placeholder}</span>
@@ -47,14 +65,32 @@ export default function CustomSelect({ options, value, onChange, placeholder }: 
 
       {/* Dropdown panel */}
       {open && (
-        <ul
-          className="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-xl border border-gray-100 py-2 max-h-60 overflow-y-auto"
+        <div className="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
-          {options.map(opt => (
+          {/* Search input */}
+          <div className="px-3 pt-3 pb-2 border-b border-gray-100">
+            <input
+              ref={searchRef}
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="w-full text-sm px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-[#11ae23]"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            />
+          </div>
+
+          <ul className="py-2 max-h-52 overflow-y-auto">
+          {filtered.length === 0 && (
+            <li className="px-4 py-3 text-sm text-gray-400 text-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+              No results found
+            </li>
+          )}
+          {filtered.map(opt => (
             <li
               key={opt}
-              onClick={() => { onChange(opt); setOpen(false) }}
+              onClick={() => { onChange(opt); setOpen(false); setSearch('') }}
               className="px-4 py-2.5 text-sm cursor-pointer transition-colors duration-100 rounded-xl mx-1"
               style={{
                 fontFamily: 'Inter, sans-serif',
@@ -73,7 +109,8 @@ export default function CustomSelect({ options, value, onChange, placeholder }: 
               {opt}
             </li>
           ))}
-        </ul>
+          </ul>
+        </div>
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 import type React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { FaMapMarkerAlt, FaFlag, FaCalendarAlt, FaCalendarCheck, FaUser } from 'react-icons/fa'
 import CustomSelect from './CustomSelect'
 
 type TripType = 'one-way' | 'round-trip'
@@ -26,34 +27,33 @@ const tabs: { value: TripType; label: string; icon: React.ReactNode }[] = [
 ]
 
 const provinces = [
-  'Metro Manila', 'Cebu', 'Davao del Sur', 'Iloilo', 'Pampanga',
-  'Laguna', 'Batangas', 'Bulacan', 'Cavite', 'Rizal',
-  'Bohol', 'Leyte', 'Negros Occidental', 'Pangasinan', 'Quezon',
-  'Albay', 'Camarines Sur', 'Isabela', 'Zamboanga del Sur', 'Cagayan de Oro',
+  'Bataan', 'Batangas', 'Benguet', 'Bohol', 'Bukidnon',
+  'Bulacan', 'Cagayan', 'Camarines Norte', 'Camarines Sur', 'Cavite',
+  'Cebu', 'Davao del Norte', 'Davao del Sur', 'Davao Occidental',
+  'Ilocos Norte', 'Ilocos Sur', 'Iloilo', 'Isabela', 'Laguna',
+  'Lanao del Norte', 'Leyte', 'Metro Manila', 'Misamis Oriental',
+  'Negros Occidental', 'Negros Oriental', 'Nueva Ecija', 'Nueva Vizcaya',
+  'Pampanga', 'Pangasinan', 'Quezon', 'Rizal', 'Samar',
+  'Sorsogon', 'South Cotabato', 'Sultan Kudarat', 'Surigao del Norte',
+  'Tarlac', 'Zambales', 'Zamboanga del Norte', 'Zamboanga del Sur',
 ]
 
-const passengerOptions = Array.from({ length: 10 }, (_, i) =>
-  `${i + 1} ${i + 1 === 1 ? 'Passenger' : 'Passengers'}`
-)
+const passengerOptions = Array.from({ length: 10 }, (_, i) => `${i + 1} Pax`)
 
-const dateInputClass = `
-  w-full h-11 px-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-700
-  focus:outline-none focus:ring-2 focus:border-transparent cursor-pointer transition-all duration-150
-`
-
-function FieldWrapper({ label, children }: { label: string; children: React.ReactNode }) {
+function CellLabel({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 flex-1 min-w-0">
-      <label
-        className="text-xs font-bold uppercase tracking-widest text-gray-700"
-        style={{ fontFamily: 'Inter, sans-serif' }}
-      >
-        {label}
-      </label>
-      {children}
+    <div className="flex items-center gap-1.5 mb-1">
+      <span style={{ color: '#11ae23' }}>{icon}</span>
+      <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+        {children}
+      </p>
     </div>
   )
 }
+
+const dateInputClass = `
+  w-full bg-transparent text-sm text-gray-700 focus:outline-none cursor-pointer
+`
 
 export default function BookingCard() {
   const [tripType, setTripType] = useState<TripType>('one-way')
@@ -63,16 +63,43 @@ export default function BookingCard() {
   const [returnDate, setReturnDate] = useState('')
   const [passengers, setPassengers] = useState('')
 
-  return (
-    <div className="relative z-20 mx-auto w-11/12 max-w-5xl -mt-10 sm:-mt-16 md:-mt-20 rounded-3xl bg-white shadow-2xl border border-gray-100 px-4 sm:px-6 md:px-8 pt-5 pb-6 md:pb-8">
+  const isRoundTrip = tripType === 'round-trip'
+  const [titleAnim, setTitleAnim] = useState(false)
 
-      {/* Trip type tabs */}
-      <div className="flex bg-gray-100 rounded-xl p-1 gap-1 mb-5 w-full sm:w-auto">
+  useEffect(() => {
+    const handler = () => {
+      setTitleAnim(false)
+      requestAnimationFrame(() => requestAnimationFrame(() => setTitleAnim(true)))
+      setTimeout(() => setTitleAnim(false), 1000)
+    }
+    window.addEventListener('book-now-clicked', handler)
+    return () => window.removeEventListener('book-now-clicked', handler)
+  }, [])
+
+  return (
+    <div id="booking-card" className="relative z-20 mx-auto w-11/12 max-w-6xl -mt-10 sm:-mt-16 md:-mt-20 rounded-xl bg-white shadow-2xl border border-gray-100 pb-0">
+
+      {/* Header row */}
+      <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4">
+        <h2
+          className="text-xl font-extrabold inline-block"
+          style={{
+            fontFamily: 'Inter, sans-serif',
+            color: '#11ae23',
+            animation: titleAnim ? 'bookHerePulse 1s ease-in-out forwards' : 'none',
+            transformOrigin: 'left center',
+          }}
+        >
+          BOOK HERE
+        </h2>
+
+        {/* Trip type tabs */}
+        <div className="inline-flex bg-gray-100 rounded-xl p-1 gap-1">
         {tabs.map(({ value, label, icon }) => (
           <button
             key={value}
             onClick={() => setTripType(value)}
-            className="relative flex flex-1 sm:flex-none items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer"
+            className="relative flex items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer"
             style={{
               fontFamily: 'Inter, sans-serif',
               backgroundColor: tripType === value ? '#ffffff' : 'transparent',
@@ -84,74 +111,73 @@ export default function BookingCard() {
             {label}
           </button>
         ))}
+        </div>
       </div>
 
-      {/* Form fields */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-row gap-3 items-end">
+      <hr className="border-gray-300" />
 
-        <FieldWrapper label="From">
-          <CustomSelect
-            options={provinces}
-            value={from}
-            onChange={setFrom}
-            placeholder="Choose origin"
-          />
-        </FieldWrapper>
+      {/* 6-column strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
 
-        <FieldWrapper label="To">
-          <CustomSelect
-            options={provinces}
-            value={to}
-            onChange={setTo}
-            placeholder="Choose destination"
-          />
-        </FieldWrapper>
+        {/* 1 — From */}
+        <div className="flex flex-col justify-center px-4 py-3 border-r border-b lg:border-b-0 border-gray-300 rounded-bl-xl">
+          <CellLabel icon={<FaMapMarkerAlt size={11} />}>From</CellLabel>
+          <CustomSelect options={provinces} value={from} onChange={setFrom} placeholder="Select location" minimal />
+        </div>
 
-        <FieldWrapper label="Departure">
+        {/* 2 — To */}
+        <div className="flex flex-col justify-center px-4 py-3 sm:border-r border-b lg:border-b-0 border-gray-300">
+          <CellLabel icon={<FaFlag size={11} />}>To</CellLabel>
+          <CustomSelect options={provinces} value={to} onChange={setTo} placeholder="Select destination" minimal />
+        </div>
+
+        {/* 3 — Departure */}
+        <div className="flex flex-col justify-center px-4 py-3 border-r border-b lg:border-b-0 border-gray-300">
+          <CellLabel icon={<FaCalendarAlt size={11} />}>Departure</CellLabel>
           <input
             type="date"
             value={departure}
             onChange={e => setDeparture(e.target.value)}
             className={dateInputClass}
-            style={{ fontFamily: 'Inter, sans-serif', color: '#374151' }}
+            style={{ fontFamily: 'Inter, sans-serif' }}
           />
-        </FieldWrapper>
-
-        <div style={{ flex: 1, minWidth: 0, opacity: tripType === 'round-trip' ? 1 : 0.4, transition: 'opacity 0.2s ease' }}>
-          <FieldWrapper label="Return">
-            <input
-              type="date"
-              value={returnDate}
-              onChange={e => setReturnDate(e.target.value)}
-              disabled={tripType !== 'round-trip'}
-              className={dateInputClass}
-              style={{ fontFamily: 'Inter, sans-serif', color: '#374151', cursor: tripType === 'round-trip' ? 'pointer' : 'not-allowed', backgroundColor: tripType === 'round-trip' ? '#ffffff' : '#f3f4f6' }}
-            />
-          </FieldWrapper>
         </div>
 
-        <FieldWrapper label="Passengers">
-          <CustomSelect
-            options={passengerOptions}
-            value={passengers}
-            onChange={setPassengers}
-            placeholder="Select"
+        {/* 4 — Return */}
+        <div
+          className="flex flex-col justify-center px-4 py-3 sm:border-r border-b lg:border-b-0 border-gray-300 transition-opacity duration-200"
+          style={{ opacity: isRoundTrip ? 1 : 0.4 }}
+        >
+          <CellLabel icon={<FaCalendarCheck size={11} />}>Return</CellLabel>
+          <input
+            type="date"
+            value={returnDate}
+            onChange={e => setReturnDate(e.target.value)}
+            disabled={!isRoundTrip}
+            className={dateInputClass}
+            style={{ fontFamily: 'Inter, sans-serif', cursor: isRoundTrip ? 'pointer' : 'not-allowed' }}
           />
-        </FieldWrapper>
+        </div>
 
-        {/* Search button */}
+        {/* 5 — Passengers */}
+        <div className="flex flex-col justify-center px-4 py-3 border-r border-gray-300">
+          <CellLabel icon={<FaUser size={11} />}>Passengers</CellLabel>
+          <CustomSelect options={passengerOptions} value={passengers} onChange={setPassengers} placeholder="Select" minimal />
+        </div>
+
+        {/* 6 — Search */}
         <button
-          className="btn-primary col-span-2 sm:col-span-3 lg:col-span-1 h-11 px-7 rounded-xl text-sm font-bold text-white cursor-pointer whitespace-nowrap flex-shrink-0 flex items-center justify-center gap-2 w-full lg:w-auto"
+          className="btn-primary flex items-center justify-center gap-2 font-bold text-white cursor-pointer rounded-br-xl"
           style={{
             fontFamily: 'Inter, sans-serif',
+            fontSize: '15px',
             backgroundColor: '#11ae23',
-            backgroundImage: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%)',
+            backgroundImage: 'linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 4s infinite linear',
-            marginTop: '22px',
           }}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
           </svg>
           Search

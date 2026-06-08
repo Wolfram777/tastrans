@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import logo from '../assets/images/homelogo.png'
+import { scrollToBooking } from '../utils/scrollToBooking'
 
 const navLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Online Booking', to: '/booking' },
+  { label: 'Online Booking', to: null },
   { label: 'Terminals', to: '/terminals' },
   { label: 'Schedule', to: '/schedule' },
   { label: 'FAQs', to: '/faqs' },
@@ -13,6 +14,7 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
@@ -32,30 +34,39 @@ export default function Navbar() {
         `}
       >
         {/* Logo */}
-        <Link to="/" className="h-20 flex items-center">
+        <Link to="/" className="h-20 flex items-center" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img
             src={logo}
             alt="Tastrans"
-            className="h-24 w-40 md:w-48 object-contain translate-y-[5px]"
+            className="h-24 w-40 md:w-48 object-contain"
           />
         </Link>
 
         {/* Desktop nav */}
         <ul className="hidden md:flex h-20" style={{ fontFamily: 'Inter, sans-serif' }}>
           {navLinks.map(({ label, to }) => (
-            <li key={to} className="flex">
-              <NavLink
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center px-4 text-sm font-bold border-b-4 transition-colors cursor-pointer
-                  ${isActive
-                    ? 'text-gray-900 border-gray-900'
-                    : 'text-gray-500 border-transparent hover:text-gray-900'
-                  }`
-                }
-              >
-                {label}
-              </NavLink>
+            <li key={label} className="flex">
+              {to === null ? (
+                <button
+                  onClick={() => scrollToBooking(navigate)}
+                  className="flex items-center px-4 text-sm font-bold border-b-4 border-transparent text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
+                >
+                  {label}
+                </button>
+              ) : (
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    `flex items-center px-4 text-sm font-bold border-b-4 transition-colors cursor-pointer
+                    ${isActive
+                      ? 'text-gray-900 border-[#11ae23]'
+                      : 'text-gray-500 border-transparent hover:text-gray-900'
+                    }`
+                  }
+                >
+                  {label}
+                </NavLink>
+              )}
             </li>
           ))}
         </ul>
@@ -67,6 +78,7 @@ export default function Navbar() {
             backgroundColor: '#11ae23',
             animation: 'scalePulse 2s ease-in-out infinite',
           }}
+          onClick={() => scrollToBooking(navigate)}
         >
           Book Now
         </button>
@@ -91,22 +103,32 @@ export default function Navbar() {
         <div className="md:hidden absolute top-full left-0 right-0 mx-4 mt-1 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
-          {navLinks.map(({ label, to }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={() => setMenuOpen(false)}
-              className={({ isActive }) =>
-                `block px-6 py-4 text-sm font-bold border-l-4 transition-colors cursor-pointer
-                ${isActive
-                  ? 'text-gray-900 border-gray-900 bg-gray-50'
-                  : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
-                }`
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
+          {navLinks.map(({ label, to }) =>
+            to === null ? (
+              <button
+                key={label}
+                onClick={() => { setMenuOpen(false); scrollToBooking(navigate) }}
+                className="block w-full text-left px-6 py-4 text-sm font-bold border-l-4 border-transparent text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                {label}
+              </button>
+            ) : (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={() => setMenuOpen(false)}
+                className={({ isActive }) =>
+                  `block px-6 py-4 text-sm font-bold border-l-4 transition-colors cursor-pointer
+                  ${isActive
+                    ? 'text-gray-900 border-gray-900 bg-gray-50'
+                    : 'text-gray-500 border-transparent hover:text-gray-900 hover:bg-gray-50'
+                  }`
+                }
+              >
+                {label}
+              </NavLink>
+            )
+          )}
         </div>
       )}
     </div>

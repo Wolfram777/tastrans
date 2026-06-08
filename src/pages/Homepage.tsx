@@ -1,9 +1,11 @@
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import cover from '../assets/images/cover.png'
 import pic1 from '../assets/images/pic1.png'
 import BookingCard from '../components/BookingCard'
 import { useInView } from '../hooks/useInView'
+import { scrollToBooking } from '../utils/scrollToBooking'
 
 const slideFromRight = (delay: string): React.CSSProperties => ({
   animation: `fadeInFromRight 0.8s ease-out ${delay} both`,
@@ -71,6 +73,14 @@ function StatCard({ target, suffix, label, decimals = 0, animate }: {
 export default function Homepage() {
   const { ref: picRef, inView: picInView } = useInView(0.2)
   const { ref: statsRef, inView: statsInView } = useInView(0.2)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (sessionStorage.getItem('pendingScrollToBooking')) {
+      sessionStorage.removeItem('pendingScrollToBooking')
+      setTimeout(() => scrollToBooking(), 400)
+    }
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
@@ -106,12 +116,14 @@ export default function Homepage() {
             <span className="flex flex-col sm:flex-row justify-center md:justify-end gap-3 mt-6">
               <button
                 className="btn-primary"
+                onClick={() => navigate('/terminals')}
                 style={{ fontFamily: 'Inter, sans-serif', backgroundColor: '#11ae23', color: '#ffffff', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', border: 'none', ...fadeIn('0.5s') }}
               >
                 View Terminals
               </button>
               <button
                 className="btn-outline"
+                onClick={() => navigate('/schedule')}
                 style={{ fontFamily: 'Inter, sans-serif', backgroundColor: 'transparent', color: '#def930', fontWeight: 600, fontSize: '15px', padding: '12px 24px', borderRadius: '8px', cursor: 'pointer', border: '2px solid #def930', ...fadeIn('0.7s') }}
               >
                 Check Schedule
